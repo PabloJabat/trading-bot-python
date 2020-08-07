@@ -11,7 +11,7 @@ BARS_URL = f"https://data.alpaca.markets/v1/bars"
 HEADERS = {"APCA-API-KEY-ID": API_KEY, "APCA-API-SECRET-KEY": SECRET_KEY}
 
 
-def get_nasquad_symbols() -> List[str]:
+def get_nasdaq_symbols() -> List[str]:
     url = "https://es.wikipedia.org/wiki/NASDAQ-100"
     resp = requests.get(url)
     soup = bs4.BeautifulSoup(resp.text, features="lxml")
@@ -44,7 +44,7 @@ def pull_symbols_data(symbols: List[str], limit: int) -> None:
 
 if __name__ == "__main__":
     start = time.perf_counter()
-    nasquad_symbols = get_nasquad_symbols()
-    pull_symbols_data(nasquad_symbols, limit=5)
+    nasdaq_symbols = get_nasdaq_symbols()
+    pull_symbols_data(nasdaq_symbols, limit=50)
     end = time.perf_counter()
     print(f"Pulled data in {round(end - start, 2)} secs")
