@@ -66,6 +66,6 @@ if __name__ == "__main__":
     # from a specific exchange index like NASDAQ.
     start = time.perf_counter()
     nasdaq_symbols = get_nasdaq_symbols()
-    pull_symbols_data(nasdaq_symbols[:100], limit=50)
+    pull_symbols_data(nasdaq_symbols[:200], limit=50)
     end = time.perf_counter()
     print(f"Pulled data in {round(end - start, 2)} secs")
