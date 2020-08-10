@@ -1,37 +1,56 @@
 import time
-import requests
-import bs4
 import concurrent.futures
 from config import *
 from typing import List
-import alpaca_trade_api as tradeapi
+import alpaca_trade_api
 
-
+BASE_URL = "https://paper-api.alpaca.markets"
 BARS_URL = f"https://data.alpaca.markets/v1/bars"
-HEADERS = {"APCA-API-KEY-ID": API_KEY, "APCA-API-SECRET-KEY": SECRET_KEY}
+HEADERS = {
+    "APCA-API-KEY-ID": API_KEY,
+    "APCA-API-SECRET-KEY": SECRET_KEY
+}
+
+market_api = alpaca_trade_api.REST(API_KEY, SECRET_KEY, BASE_URL)
+bars_api = alpaca_trade_api.REST(API_KEY, SECRET_KEY)
+
+ALL_ASSETS = market_api.list_assets()
+ALL_ACTIVE_ASSETS = list(filter(lambda x: x.status == "active", ALL_ASSETS))
+ALL_INACTIVE_ASSETS = list(filter(lambda x: x.status == "inactive", ALL_ASSETS))
+
+assert len(ALL_INACTIVE_ASSETS) + len(ALL_ACTIVE_ASSETS) == len(ALL_ASSETS)
 
 
-def get_nasdaq_symbols() -> List[str]:
-    url = "https://es.wikipedia.org/wiki/NASDAQ-100"
-    resp = requests.get(url)
-    soup = bs4.BeautifulSoup(resp.text, features="lxml")
+def get_available_exchanges():
+    exchanges = set()
+    for asset in ALL_ASSETS:
+        exchanges.add(asset.exchange)
+    return exchanges
 
-    table = soup.find("table", {"class": "wikitable sortable"})
 
-    symbols_col = []
-    for row in table.findAll("tr")[1:]:
-        symbols_col.append(row.findAll("td")[0].text)
+def get_assets_from(exchange, inactive=True) -> List[str]:
+    exchanges = get_available_exchanges()
+    if exchange not in exchanges:
+        for index in exchanges:
+            print(index)
+        raise Exception("Invalid exchange")
+    else:
+        if inactive:
+            assets = ALL_ASSETS
+        else:
+            assets = ALL_ACTIVE_ASSETS
 
-    symbols = []
-    for symbol in symbols_col:
-        symbols.append(symbol.split(",")[0].strip())
+        return list(map(lambda asset: asset.symbol,
+                        filter(lambda asset: asset.exchange == exchange,
+                               assets)))
 
-    return symbols
+
+def get_nasdaq_symbols(inactive=True) -> List[str]:
+    return get_assets_from("NASDAQ", inactive=inactive)
 
 
 def pull_symbol_data(symbol: str, limit: int) -> None:
-    api = tradeapi.REST(API_KEY, SECRET_KEY)
-    data = api.get_barset(symbol, "1D", limit=limit).df
+    data = bars_api.get_barset(symbol, "1D", limit=limit).df
     data.to_csv(f"data/{symbol}.csv")
 
 
@@ -43,8 +62,10 @@ def pull_symbols_data(symbols: List[str], limit: int) -> None:
 
 
 if __name__ == "__main__":
+    # Apparently is too much data to be pulled if we want to get all the symbols
+    # from a specific exchange index like NASDAQ.
     start = time.perf_counter()
     nasdaq_symbols = get_nasdaq_symbols()
-    pull_symbols_data(nasdaq_symbols, limit=50)
+    pull_symbols_data(nasdaq_symbols[:100], limit=50)
     end = time.perf_counter()
     print(f"Pulled data in {round(end - start, 2)} secs")
