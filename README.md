@@ -40,3 +40,27 @@ need to create a `config.py` containing the credentials. You have
 You can also watch
 [this video](https://www.youtube.com/watch?v=GsGeLHTOGAg&t=100s) to learn how to 
 create an account and start using the Alpaca API.
+
+The last step is to make sure that you have ``data`` folder inside the project 
+directory. This is the folder that will contain the stock data that the code
+needs in order to make the decisions.
+
+## Usage
+
+1. Activate the environment:
+    
+    ``conda activate TradingBot``
+    
+2. First you need to run ``pull_data.py`` in order to retrieve the stock data. 
+    
+    ``python pull_data.py``
+    
+    You should be able to see the ``data`` folder full of csv files with the 
+    bars of the last 50 trading days.
+    
+3. Lastly, but not least you need to run the bot.
+
+    ``python bot.py``
+    
+Remember that we are trading with paper money and that the account that you have 
+set up is "fictitious" and that you can reset the account any time you want.
