@@ -19,7 +19,19 @@ automatically.
 You will first need to clone this project in your machine as shown below.
 
     git clone https://github.com/PabloJabat/trading-bot-python
-    
+
+Then, using ``conda`` you will create an environment using `environment.yml` in 
+the project. Run the following command to create the environment. 
+
+    conda env create -f environment.yml 
+
+This will have created a ``TradingBot`` environment will all the necessary 
+tool and packages that the project will need. Make sure you active this 
+environment every time that you want to run the code. To activate the environemt
+simply run this command.
+
+    conda activate TradingBot
+
 After you´ve done that you will need to create an account in Alpaca and 
 get a set of credentials to trade with paper money. After you got them you will
 need to create a `config.py` containing the credentials. You have 
@@ -27,4 +39,4 @@ need to create a `config.py` containing the credentials. You have
 
 You can also watch
 [this video](https://www.youtube.com/watch?v=GsGeLHTOGAg&t=100s) to learn how to 
-create an account in alpaca and start using Alpaca API.
+create an account and start using the Alpaca API.
