@@ -1,6 +1,11 @@
+# Editor folders
 .idea
+.vscode
 .ipynb_checkpoints
-__pycache__
+*.ipynb
+
 data
 config.py
-experiment.ipynb
+
+.venv
+__pycache__
