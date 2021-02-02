@@ -4,21 +4,41 @@ from airflow import DAG
 from airflow.operators.python_operator import PythonOperator
 from airflow.utils.dates import days_ago
 
+from pull_data import get_nasdaq_symbols, pull_symbols_data
+
 from datetime import timedelta
+
+import logging
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.INFO)
 
 # My TODO-List
 # TODO: We need to create a scheduler that only runs the code
-# during week days 
+# during week days
 
 # Steps of the Trading bot in dummy functions
+
+
 def load_data():
-    print("I've loaded the data")
+    """function to pull the data for the trading bot
+    """
+
+    LOGGER.info("Starting to load available symbols")
+    symbols = get_nasdaq_symbols()
+    some_symbols = symbols[:10]
+    LOGGER.info("Starting to pull symbols data")
+    pull_symbols_data(some_symbols, 10)
+    LOGGER.info("finshed pulling data")
+
 
 def remove_outdated_symbols():
     print("I've removed the symbols info which is outdated")
 
+
 def make_decisions():
     print("I know which stocks to sell and which ones to buy")
+
 
 def take_actions():
     print("I've bought and sold the required stocks")

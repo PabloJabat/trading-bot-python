@@ -42,7 +42,7 @@ def get_assets_from(exchange, inactive=True) -> List[str]:
 
         return list(map(lambda asset: asset.symbol,
                         filter(lambda asset: asset.exchange == exchange,
-                               assets)))
+                        assets)))
 
 
 def get_nasdaq_symbols(inactive=True) -> List[str]:
