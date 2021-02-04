@@ -1,6 +1,6 @@
 import time
 import concurrent.futures
-from config import *
+from .config import *
 from typing import List
 import alpaca_trade_api
 
@@ -16,7 +16,8 @@ bars_api = alpaca_trade_api.REST(API_KEY, SECRET_KEY)
 
 ALL_ASSETS = market_api.list_assets()
 ALL_ACTIVE_ASSETS = list(filter(lambda x: x.status == "active", ALL_ASSETS))
-ALL_INACTIVE_ASSETS = list(filter(lambda x: x.status == "inactive", ALL_ASSETS))
+ALL_INACTIVE_ASSETS = list(
+    filter(lambda x: x.status == "inactive", ALL_ASSETS))
 
 assert len(ALL_INACTIVE_ASSETS) + len(ALL_ACTIVE_ASSETS) == len(ALL_ASSETS)
 
@@ -42,7 +43,7 @@ def get_assets_from(exchange, inactive=True) -> List[str]:
 
         return list(map(lambda asset: asset.symbol,
                         filter(lambda asset: asset.exchange == exchange,
-                        assets)))
+                               assets)))
 
 
 def get_nasdaq_symbols(inactive=True) -> List[str]:
