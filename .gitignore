@@ -1,6 +1,6 @@
-.idea
-.ipynb_checkpoints
-__pycache__
-data
-config.py
-experiment.ipynb
+**/__pycache__/
+.venv
+.vscode
+*.egg-info
+dist
+build
