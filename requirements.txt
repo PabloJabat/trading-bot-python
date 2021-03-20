@@ -41,7 +41,7 @@ importlib-metadata==2.1.1
 importlib-resources==1.5.0
 iso8601==0.1.13
 itsdangerous==1.1.0
-Jinja2==2.11.2
+Jinja2==2.11.3
 json-merge-patch==0.2
 jsonschema==3.2.0
 lazy-object-proxy==1.4.3
