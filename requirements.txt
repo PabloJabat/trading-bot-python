@@ -88,7 +88,7 @@ tzlocal==1.5.1
 unicodecsv==0.14.1
 urllib3==1.25.11
 websocket-client==0.57.0
-websockets==8.1
+websockets==9.1
 Werkzeug==0.16.1
 WTForms==2.3.3
 zipp==3.4.0
