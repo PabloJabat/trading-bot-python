@@ -1,25 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """pull data"""
-import os
-import time
 import concurrent.futures
+import time
 from configparser import ConfigParser
 from typing import List
-from alpaca.trading.client import TradingClient
-from alpaca.data import StockHistoricalDataClient, TimeFrameUnit, TimeFrame
+
+from alpaca.data import StockHistoricalDataClient, TimeFrame, TimeFrameUnit
 from alpaca.data.requests import StockBarsRequest
+from alpaca.trading.client import TradingClient
 
 config = ConfigParser()
-a = config.read('config.ini')
+a = config.read("config.ini")
 
-trading_client = TradingClient(config["api"]["ApiKey"], config["api"]["ApiKey"], paper=True)
-data_client = StockHistoricalDataClient(config["api"]["ApiKey"], config["api"]["ApiKey"])
+print(a)
+
+trading_client = TradingClient(
+    config["api"]["ApiKey"], config["api"]["ApiKey"], paper=True
+)
+data_client = StockHistoricalDataClient(
+    config["api"]["ApiKey"], config["api"]["ApiKey"]
+)
 
 ALL_ASSETS = trading_client.get_all_assets()
 ALL_ACTIVE_ASSETS = list(filter(lambda x: x.status == "active", ALL_ASSETS))
-ALL_INACTIVE_ASSETS = list(
-    filter(lambda x: x.status == "inactive", ALL_ASSETS))
+ALL_INACTIVE_ASSETS = list(filter(lambda x: x.status == "inactive", ALL_ASSETS))
 
 assert len(ALL_INACTIVE_ASSETS) + len(ALL_ACTIVE_ASSETS) == len(ALL_ASSETS)
 
@@ -43,9 +48,12 @@ def get_assets_from(exchange, inactive=True) -> List[str]:
         else:
             assets = ALL_ACTIVE_ASSETS
 
-        return list(map(lambda asset: asset.symbol,
-                        filter(lambda asset: asset.exchange == exchange,
-                               assets)))
+        return list(
+            map(
+                lambda asset: asset.symbol,
+                filter(lambda asset: asset.exchange == exchange, assets),
+            )
+        )
 
 
 def get_nasdaq_symbols(inactive=True) -> List[str]:
@@ -54,9 +62,7 @@ def get_nasdaq_symbols(inactive=True) -> List[str]:
 
 def pull_symbol_data(symbol: str, limit: int) -> None:
     request_params = StockBarsRequest(
-        symbol_or_symbols=symbol,
-        timeframe=TimeFrame(1, TimeFrameUnit.Day),
-        limit=limit
+        symbol_or_symbols=symbol, timeframe=TimeFrame(1, TimeFrameUnit.Day), limit=limit
     )
 
     data = data_client.get_stock_bars(request_params).df

@@ -1,3 +1,5 @@
 alpaca-py
 configparser
 pandas
+isort
+black

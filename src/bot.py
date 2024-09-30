@@ -1,18 +1,21 @@
-from moving_averages import *
-from pull_data import get_nasdaq_symbols
 import concurrent.futures
-import pandas as pd
 import datetime
 import logging
 from configparser import ConfigParser
 
+import pandas as pd
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import OrderRequest
 
-config = ConfigParser()
-a = config.read('config.ini')
+from moving_averages import *
+from pull_data import get_nasdaq_symbols
 
-trading_client = TradingClient(config["api"]["ApiKey"], config["api"]["ApiKey"], paper=True)
+config = ConfigParser()
+a = config.read("config.ini")
+
+trading_client = TradingClient(
+    config["api"]["ApiKey"], config["api"]["ApiKey"], paper=True
+)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -25,8 +28,8 @@ def is_data_up_to_date(data: pd.DataFrame, offset: int) -> bool:
     :return:
     """
     return pd.to_datetime(
-        data.index[-1]).date() == datetime.date.today() - datetime.timedelta(
-        offset)
+        data.index[-1]
+    ).date() == datetime.date.today() - datetime.timedelta(offset)
 
 
 def load_close_data(symbols):
@@ -99,17 +102,13 @@ if __name__ == "__main__":
                 qty=position.qty,
                 side="sell",
                 type="market",
-                time_in_force="gtc"
+                time_in_force="gtc",
             )
             _ = trading_client.submit_order(order_params)
 
     for symbol in stock_to_buy:
         order_params = OrderRequest(
-            symbol=symbol,
-            qty=1,
-            side="buy",
-            type="market",
-            time_in_force="gtc"
+            symbol=symbol, qty=1, side="buy", type="market", time_in_force="gtc"
         )
         _ = trading_client.submit_order(order_params)
         logging.debug(f"Bought {symbol} stock(s)")

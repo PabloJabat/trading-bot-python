@@ -8,8 +8,7 @@ LOGGER = make_logger(__name__)
 
 
 def load_data():
-    """function to pull the data for the trading bot
-    """
+    """function to pull the data for the trading bot"""
 
     LOGGER.info("Starting to load available symbols")
     # symbols = get_nasdaq_symbols()
