@@ -1,7 +1,8 @@
-import pandas as pd
+from numbers import Number
 from pathlib import WindowsPath
 from typing import Sequence
-from numbers import Number
+
+import pandas as pd
 
 
 def load_symbol(symbol: str) -> pd.DataFrame:
@@ -20,13 +21,15 @@ def crossover(series1: Sequence, series2: Sequence) -> bool:
     `series2`.
     """
     series1 = (
-        series1.values if isinstance(series1, pd.Series) else
-        (series1, series1) if isinstance(series1, Number) else
-        series1)
+        series1.values
+        if isinstance(series1, pd.Series)
+        else (series1, series1) if isinstance(series1, Number) else series1
+    )
     series2 = (
-        series2.values if isinstance(series2, pd.Series) else
-        (series2, series2) if isinstance(series2, Number) else
-        series2)
+        series2.values
+        if isinstance(series2, pd.Series)
+        else (series2, series2) if isinstance(series2, Number) else series2
+    )
     try:
         return series1[-2] < series2[-2] and series1[-1] > series2[-1]
     except IndexError:
