@@ -4,12 +4,16 @@ import concurrent.futures
 import pandas as pd
 import datetime
 import logging
-import alpaca_trade_api
-from config import API_KEY, SECRET_KEY
+from configparser import ConfigParser
 
+from alpaca.trading.client import TradingClient
+from alpaca.trading.requests import OrderRequest
 
-PAPER_TRADING_URL = "https://paper-api.alpaca.markets"
-api = alpaca_trade_api.REST(API_KEY, SECRET_KEY, PAPER_TRADING_URL)
+config = ConfigParser()
+a = config.read('config.ini')
+
+trading_client = TradingClient(config["api"]["ApiKey"], config["api"]["ApiKey"], paper=True)
+
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -60,7 +64,7 @@ if __name__ == "__main__":
     if datetime.date.weekday(datetime.date.today()) > 4:
         raise Exception("Market is closed")
 
-    # Load the data and check that is up to date
+    # Load the data and check that is up-to-date
     nasdaq_symbols = get_nasdaq_symbols()[:200]
     data = load_close_data(nasdaq_symbols)
 
@@ -75,7 +79,7 @@ if __name__ == "__main__":
                 nasdaq_symbols.remove(symbol)
     logging.debug(f"Deleted {count_deleted} symbol(s)")
 
-    # Run the decision making algorithm
+    # Run the decision-making algorithm
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = executor.map(make_decision, data.values())
 
@@ -88,22 +92,24 @@ if __name__ == "__main__":
     logging.debug(f"Found {len(stock_to_buy)} stock(s) to buy")
     logging.debug(f"Found {len(stock_to_sell)} stock(s) to sell")
 
-    for position in api.list_positions():
+    for position in trading_client.get_all_positions():
         if position.symbol in stock_to_sell:
-            _ = api.submit_order(
-                position.symnol,
+            order_params = OrderRequest(
+                symbol=position.symbol,
                 qty=position.qty,
                 side="sell",
                 type="market",
                 time_in_force="gtc"
             )
+            _ = trading_client.submit_order(order_params)
 
     for symbol in stock_to_buy:
-        _ = api.submit_order(
-            symbol,
+        order_params = OrderRequest(
+            symbol=symbol,
             qty=1,
             side="buy",
             type="market",
             time_in_force="gtc"
         )
+        _ = trading_client.submit_order(order_params)
         logging.debug(f"Bought {symbol} stock(s)")

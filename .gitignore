@@ -1,6 +1,10 @@
 **/__pycache__/
+.idea
 .venv
 .vscode
 *.egg-info
 dist
 build
+data/*
+*.ini
+!.keepgit

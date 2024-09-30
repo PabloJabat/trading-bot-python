@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""trading_bot.interface."""
+"""src.interface."""
 
 from .take_actions_ import take_actions
 from .load_data_ import load_data

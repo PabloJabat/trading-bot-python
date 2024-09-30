@@ -4,6 +4,8 @@
 
 from pull_data import get_nasdaq_symbols, pull_symbols_data
 
-symbols = get_nasdaq_symbols()
+if __name__ == "__main__":
+    
+    symbols = get_nasdaq_symbols()
 
-pull_symbols_data(symbols[:10], 5)
+    pull_symbols_data(symbols[:10], 5)

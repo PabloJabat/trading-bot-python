@@ -1,24 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """pull data"""
-
+import os
 import time
 import concurrent.futures
-from .config import *
+from configparser import ConfigParser
 from typing import List
-import alpaca_trade_api
+from alpaca.trading.client import TradingClient
+from alpaca.data import StockHistoricalDataClient, TimeFrameUnit, TimeFrame
+from alpaca.data.requests import StockBarsRequest
 
-BASE_URL = "https://paper-api.alpaca.markets"
-BARS_URL = f"https://data.alpaca.markets/v1/bars"
-HEADERS = {
-    "APCA-API-KEY-ID": API_KEY,
-    "APCA-API-SECRET-KEY": SECRET_KEY
-}
+config = ConfigParser()
+a = config.read('config.ini')
 
-market_api = alpaca_trade_api.REST(API_KEY, SECRET_KEY, BASE_URL)
-bars_api = alpaca_trade_api.REST(API_KEY, SECRET_KEY)
+trading_client = TradingClient(config["api"]["ApiKey"], config["api"]["ApiKey"], paper=True)
+data_client = StockHistoricalDataClient(config["api"]["ApiKey"], config["api"]["ApiKey"])
 
-ALL_ASSETS = market_api.list_assets()
+ALL_ASSETS = trading_client.get_all_assets()
 ALL_ACTIVE_ASSETS = list(filter(lambda x: x.status == "active", ALL_ASSETS))
 ALL_INACTIVE_ASSETS = list(
     filter(lambda x: x.status == "inactive", ALL_ASSETS))
@@ -55,7 +53,13 @@ def get_nasdaq_symbols(inactive=True) -> List[str]:
 
 
 def pull_symbol_data(symbol: str, limit: int) -> None:
-    data = bars_api.get_barset(symbol, "1D", limit=limit).df
+    request_params = StockBarsRequest(
+        symbol_or_symbols=symbol,
+        timeframe=TimeFrame(1, TimeFrameUnit.Day),
+        limit=limit
+    )
+
+    data = data_client.get_stock_bars(request_params).df
     data.to_csv(f"data/{symbol}.csv")
 
 
@@ -67,10 +71,12 @@ def pull_symbols_data(symbols: List[str], limit: int) -> None:
 
 
 if __name__ == "__main__":
+    # needs to be run `python -m src.pull_data`
     # Apparently is too much data to be pulled if we want to get all the symbols
     # from a specific exchange index like NASDAQ.
     start = time.perf_counter()
     nasdaq_symbols = get_nasdaq_symbols()
-    pull_symbols_data(nasdaq_symbols[:200], limit=50)
+    print(nasdaq_symbols)
+    pull_symbol_data(nasdaq_symbols[1], limit=50)
     end = time.perf_counter()
-    print(f"Pulled data in {round(end - start, 2)} secs")
+    print(f"Pulled data in {end - start} secs")

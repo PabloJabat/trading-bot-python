@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Take actions task"""
 
-from trading_bot.utils import make_logger
+from src.utils import make_logger
 
 LOGGER = make_logger(__name__)
 

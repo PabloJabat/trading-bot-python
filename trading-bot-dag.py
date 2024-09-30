@@ -1,4 +1,4 @@
-from trading_bot.interface import (
+from src.interface import (
     load_data,
     make_decisions,
     take_actions,
